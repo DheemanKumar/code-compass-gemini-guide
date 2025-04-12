@@ -1,7 +1,8 @@
+
 #root {
-  max-width: 1280px;
+  max-width: 1400px;
   margin: 0 auto;
-  padding: 2rem;
+  padding: 1rem;
   text-align: center;
 }
 
@@ -12,10 +13,10 @@
   transition: filter 300ms;
 }
 .logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
+  filter: drop-shadow(0 0 2em rgba(155, 135, 245, 0.7));
 }
 .logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
+  filter: drop-shadow(0 0 2em rgba(97, 218, 251, 0.7));
 }
 
 @keyframes logo-spin {
@@ -35,8 +36,39 @@
 
 .card {
   padding: 2em;
+  transition: all 0.3s ease;
+}
+
+.card:hover {
+  transform: translateY(-5px);
 }
 
 .read-the-docs {
   color: #888;
+}
+
+/* Glow effect */
+.glow-text {
+  text-shadow: 0 0 10px rgba(155, 135, 245, 0.5);
+}
+
+/* Gradient backgrounds */
+.bg-gradient-1 {
+  background: linear-gradient(135deg, #fdfcfb 0%, #e2d1c3 100%);
+}
+
+.bg-gradient-2 {
+  background: linear-gradient(90deg, hsla(186, 33%, 94%, 1) 0%, hsla(216, 41%, 79%, 1) 100%);
+}
+
+.bg-gradient-3 {
+  background: linear-gradient(90deg, hsla(277, 75%, 84%, 1) 0%, hsla(297, 50%, 51%, 1) 100%);
+}
+
+/* Glassmorphism */
+.glass {
+  background: rgba(255, 255, 255, 0.25);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  border: 1px solid rgba(255, 255, 255, 0.18);
 }
