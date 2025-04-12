@@ -111,15 +111,60 @@ export const executeCode = async (code: string): Promise<CodeResponse> => {
   }
 };
 
-// Simulated backend for getting AI explanations
+// Use the Gemini API to get AI explanations for Python errors
 export const explainError = async (errorMessage: string): Promise<ExplanationResponse> => {
   try {
-    // In a real app, this would call the Gemini API
-    // For demo purposes, we'll return predefined responses based on error types
+    // This matches your Python function approach with the Gemini API
+    const url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=AIzaSyCh6LWNx8l1mDMB61zQEWAX6nk8pm6ZdLc";
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        contents: [
+          {
+            role: "user",
+            parts: [
+              { text: `Explain this Python error in simple terms:\n\n${errorMessage}` }
+            ]
+          }
+        ]
+      }),
+    });
+    
+    const data = await response.json();
+    
+    // If we get an error from the API, fall back to our mock explanations
+    if (data.error) {
+      console.error("Error from Gemini API:", data.error);
+      return getFallbackExplanation(errorMessage);
+    }
+    
+    // Extract the explanation text from the Gemini API response
+    if (data.candidates && 
+        data.candidates[0] && 
+        data.candidates[0].content && 
+        data.candidates[0].content.parts && 
+        data.candidates[0].content.parts[0]) {
+      return { 
+        explanation: data.candidates[0].content.parts[0].text 
+      };
+    }
+    
+    // If we couldn't extract the explanation, fall back to our mock explanations
+    return getFallbackExplanation(errorMessage);
+  } catch (error) {
+    console.error("Error explaining code:", error);
+    return getFallbackExplanation(errorMessage);
+  }
+};
 
-    if (errorMessage.includes("ZeroDivisionError")) {
-      return {
-        explanation: `
+// Fallback explanations if the Gemini API call fails
+function getFallbackExplanation(errorMessage: string): ExplanationResponse {
+  if (errorMessage.includes("ZeroDivisionError")) {
+    return {
+      explanation: `
 ## Division by Zero Error
 
 **What happened:**
@@ -140,13 +185,13 @@ if divisor != 0:
 else:
     result = "Cannot divide by zero"
 \`\`\`
-        `
-      };
-    }
+      `
+    };
+  }
 
-    if (errorMessage.includes("NameError")) {
-      return {
-        explanation: `
+  if (errorMessage.includes("NameError")) {
+    return {
+      explanation: `
 ## Name Error
 
 **What happened:**
@@ -168,47 +213,13 @@ my_variable = 10
 # Then use it
 print(my_variable)
 \`\`\`
-        `
-      };
-    }
+      `
+    };
+  }
 
-    if (errorMessage.includes("SyntaxError")) {
-      return {
-        explanation: `
-## Syntax Error
-
-**What happened:**
-Your code has a syntax mistake that Python cannot understand.
-
-**Why it's a problem:**
-Python has specific rules for how code must be written. When these rules are broken, Python can't interpret what you're trying to do.
-
-**Common syntax issues:**
-1. Missing parentheses or quotes
-2. Incorrect indentation
-3. Missing colons after if/for/while statements
-4. Using a Python keyword incorrectly
-
-**How to fix it:**
-Look carefully at the line mentioned in the error message and check for:
-- Matching pairs of parentheses, brackets, and quotes
-- Proper indentation (especially after functions, loops, and conditionals)
-- Required colons at the end of statements like if, for, while
-- Correct spelling of function names and variables
-
-**Example solution:**
-\`\`\`python
-# Incorrect: print(Hello World)
-# Correct:
-print("Hello World")
-\`\`\`
-        `
-      };
-    }
-
-    // Generic explanation for any other error
-    return {
-      explanation: `
+  // Generic explanation for any other error
+  return {
+    explanation: `
 ## Error Analysis
 
 **What happened:**
@@ -227,17 +238,11 @@ This error prevents your program from executing correctly.
 - Add print statements to track variable values
 - Break complex operations into smaller steps
 - Review Python documentation for correct syntax
-      `
-    };
-  } catch (error) {
-    console.error("Error explaining code:", error);
-    return {
-      explanation: "An error occurred while trying to explain the error. Please try again."
-    };
-  }
-};
+    `
+  };
+}
 
-// This would be an actual API call to the Gemini AI in a real implementation
+// This is a direct implementation of the Gemini API call that matches the Python code provided
 export const callGeminiAPI = async (errorText: string): Promise<string> => {
   try {
     const response = await fetch(
