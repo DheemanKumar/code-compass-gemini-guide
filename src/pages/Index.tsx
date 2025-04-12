@@ -1,12 +1,12 @@
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import CodeEditor from "../components/CodeEditor";
 import MarkdownParser from "../components/MarkdownParser";
 import { Button } from "../components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "../components/ui/card";
 import { Separator } from "../components/ui/separator";
 import { useToast } from "../components/ui/use-toast";
-import { ChevronRight, Code2, Loader2, HelpCircle } from "lucide-react";
+import { ChevronRight, Code2, Loader2, HelpCircle, AlertCircle } from "lucide-react";
 import { executeCode, explainError, callGeminiAPI } from "../services/api";
 
 const Index = () => {
@@ -16,6 +16,7 @@ const Index = () => {
   const [explanation, setExplanation] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isExplaining, setIsExplaining] = useState(false);
+  const [autoExplain, setAutoExplain] = useState<string | null>(null);
   const { toast } = useToast();
 
   const handleCodeChange = (value: string) => {
@@ -36,6 +37,7 @@ const Index = () => {
     setOutput(null);
     setError(null);
     setExplanation(null);
+    setAutoExplain(null);
 
     try {
       const result = await executeCode(code);
@@ -46,6 +48,23 @@ const Index = () => {
       } else {
         setOutput(null);
         setError(result.error || "An unknown error occurred.");
+        
+        // Automatically fetch error explanation
+        try {
+          let explanation;
+          try {
+            // Try to use Gemini API first
+            explanation = await callGeminiAPI(result.error || "Unknown error");
+          } catch (geminiError) {
+            // Fall back to mock explanations
+            console.error("Gemini API call failed, using fallback explanation", geminiError);
+            const fallbackResult = await explainError(result.error || "Unknown error");
+            explanation = fallbackResult.explanation;
+          }
+          setAutoExplain(explanation);
+        } catch (explainErr) {
+          console.error("Error getting auto explanation:", explainErr);
+        }
       }
     } catch (err) {
       console.error("Error running code:", err);
@@ -152,7 +171,7 @@ const Index = () => {
                 )}
               </div>
             </CardContent>
-            {error && (
+            {error && !autoExplain && (
               <CardFooter className="flex justify-end">
                 <Button 
                   onClick={handleExplainError} 
@@ -171,7 +190,27 @@ const Index = () => {
             )}
           </Card>
 
-          {explanation && (
+          {/* Auto Explanation section appears immediately when there's an error */}
+          {autoExplain && (
+            <Card className="mt-6 animate-fade-in bg-purple-50">
+              <CardHeader className="pb-2">
+                <CardTitle className="flex items-center text-purple-900">
+                  <AlertCircle className="mr-2 h-5 w-5 text-purple-700" />
+                  Error Explanation
+                </CardTitle>
+                <CardDescription className="text-purple-700">
+                  Understanding what went wrong
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="prose prose-sm max-w-none">
+                  <MarkdownParser markdown={autoExplain} className="text-purple-950" />
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
+          {explanation && !autoExplain && (
             <Card className="mt-6 animate-fade-in">
               <CardHeader>
                 <CardTitle>Error Explanation</CardTitle>
