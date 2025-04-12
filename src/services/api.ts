@@ -20,14 +20,7 @@ export const executeCode = async (code: string): Promise<CodeResponse> => {
     
     // Simulate different responses based on code content
     if (code.includes('print(')) {
-      // Simulate successful execution
-      const match = code.match(/print\(['"](.+)['"]\)/);
-      if (match) {
-        return { 
-          success: true,
-          output: match[1]
-        };
-      }
+      // Check for various error conditions first
       
       // Simulate a division by zero error
       if (code.includes('1/0')) {
@@ -53,6 +46,15 @@ export const executeCode = async (code: string): Promise<CodeResponse> => {
         };
       }
       
+      // If no errors, then it's a successful execution
+      const match = code.match(/print\(['"](.+)['"]\)/);
+      if (match) {
+        return { 
+          success: true,
+          output: match[1]
+        };
+      }
+      
       // Generic success case
       return {
         success: true,
@@ -60,10 +62,44 @@ export const executeCode = async (code: string): Promise<CodeResponse> => {
       };
     }
     
-    // Simulate a syntax error for demo purposes
+    // Add more error simulations for testing
+    if (code.includes('for i in range')) {
+      if (code.includes('range(')) {
+        return {
+          success: true,
+          output: "Loop executed successfully!"
+        };
+      } else {
+        return {
+          success: false,
+          error: "TypeError: range expected at least 1 argument, got 0"
+        };
+      }
+    }
+    
+    if (code.includes('import ')) {
+      if (code.includes('import nonexistent_module')) {
+        return {
+          success: false,
+          error: "ModuleNotFoundError: No module named 'nonexistent_module'"
+        };
+      }
+    }
+    
+    // Simulate an indentation error
+    if (code.includes('def ')) {
+      if (!code.includes('    ')) {
+        return {
+          success: false,
+          error: "IndentationError: Expected an indented block after function definition"
+        };
+      }
+    }
+    
+    // Default case - simulate a generic syntax error
     return {
       success: false,
-      error: "SyntaxError: Expected an indented block after function definition"
+      error: "SyntaxError: Invalid syntax"
     };
     
   } catch (error) {
