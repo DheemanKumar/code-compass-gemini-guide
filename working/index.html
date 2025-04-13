@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Python Runner with AI Help</title>
+  <style>
+    body { font-family: Arial; padding: 20px; background: #f9f9f9; }
+    textarea { width: 100%; height: 200px; font-family: monospace; }
+    button { padding: 10px 20px; margin-top: 10px; }
+    #output, #explanation {
+      margin-top: 20px;
+      background: #eef;
+      padding: 10px;
+      border-radius: 5px;
+      white-space: pre-wrap;
+    }
+    #explanation { background: #dff0d8; }
+  </style>
+</head>
+<body>
+  <h2>Online Python Compiler with AI Help</h2>
+  <textarea id="code" placeholder="Write Python code here..."></textarea><br>
+  <button onclick="submitCode()">Submit</button>
+  <button id="helpBtn" onclick="getHelp()" style="display:none;">Help?</button>
+
+  <div id="output"></div>
+  <div id="explanation"></div>
+
+  <script>
+    let currentError = "";
+
+    async function submitCode() {
+      const code = document.getElementById("code").value;
+      const res = await fetch("http://127.0.0.1:5000/run_code", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ code })
+      });
+
+      const data = await res.json();
+      const outputDiv = document.getElementById("output");
+      const helpBtn = document.getElementById("helpBtn");
+      const explanationDiv = document.getElementById("explanation");
+
+      explanationDiv.innerHTML = "";
+
+      if (data.status === "success") {
+        outputDiv.innerHTML = "<strong>Output:</strong><br><pre>" + data.output + "</pre>";
+        helpBtn.style.display = "none";
+        currentError = "";
+      } else {
+        outputDiv.innerHTML = "<strong>Error:</strong><br><pre>" + data.error + "</pre>";
+        helpBtn.style.display = "inline-block";
+        currentError = data.error;
+      }
+    }
+
+    async function getHelp() {
+  if (!currentError) return;
+
+  const code = document.getElementById("code").value;
+
+  const res = await fetch("http://127.0.0.1:5000/explain_error", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ error: currentError, code: code })
+  });
+
+  const data = await res.json();
+  document.getElementById("explanation").innerHTML = "<strong>Explanation:</strong><br>" + data.explanation;
+
+}
+
+  </script>
+</body>
+</html>

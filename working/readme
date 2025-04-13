@@ -1,0 +1,107 @@
+# 🧭 Code Compass
+
+A simple web app to run Python code and get AI-powered explanations for errors.
+
+---
+
+## 🔧 Prerequisites
+
+- Python 3.7 or higher
+- Git
+- A modern web browser (Chrome, Firefox, Edge, etc.)
+
+---
+
+## 🚀 Getting Started
+
+### 1️⃣ Clone the Repository
+
+```bash
+git clone https://github.com/your-username/code-compass.git
+cd code-compass
+```
+
+---
+
+### 2️⃣ Create and Activate a Virtual Environment
+
+#### macOS / Linux:
+```bash
+python3 -m venv venv
+source venv/bin/activate
+```
+
+#### Windows:
+```bash
+python -m venv venv
+venv\Scripts\activate
+```
+
+---
+
+### 3️⃣ Install Required Packages
+
+```bash
+pip install -r requirements.txt
+```
+
+---
+
+### 4️⃣ Run the Flask Server
+
+```bash
+python main.py
+```
+
+The server will start at:
+
+```
+http://127.0.0.1:5000/
+```
+
+---
+
+### 5️⃣ Open the Frontend
+
+#### Option A: Use Terminal
+
+- macOS:
+  ```bash
+  open index.html
+  ```
+- Linux:
+  ```bash
+  xdg-open index.html
+  ```
+- Windows:
+  ```bash
+  start index.html
+  ```
+
+#### Option B: Use File Explorer
+
+- Right-click `index.html` → **Open with browser**
+
+---
+
+## 📁 Project Structure
+
+```
+code-compass/
+├── main.py               # Flask backend
+├── requirements.txt      # Dependency list
+├── index.html            # Frontend file
+└── README.md             # This file
+```
+
+---
+
+## 🤝 Contributing
+
+Pull requests are welcome! Feel free to fork and improve the project.
+
+---
+
+## 📄 License
+
+Licensed under the [MIT License](LICENSE).

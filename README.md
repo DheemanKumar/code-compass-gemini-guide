@@ -1,3 +1,9 @@
+NOTE:
+THIS IS NOT INTEGRATED WITH BACKEND
+OPEN THE WORKING FILE FOR MORE INFO
+
+
+
 # Welcome to your Lovable project
 
 ## Project info
